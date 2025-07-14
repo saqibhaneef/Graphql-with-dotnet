@@ -1,0 +1,12 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/GraphQlDemo/bin/Debug/net9.0
+/GraphQlDemo/obj
+/PizzaOrder.Data/bin/Debug/net9.0
+/PizzaOrder.Data/obj
+/obj
+/bin
+/.vs
+
