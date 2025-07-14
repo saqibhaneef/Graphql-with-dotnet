@@ -1,4 +1,5 @@
-﻿using PizzaOrder.API.Schema.Queries;
+﻿using GraphQLDemo.API.Models;
+using PizzaOrder.API.Schema.Queries;
 
 namespace PizzaOrder.API.Schema.Mutations
 {

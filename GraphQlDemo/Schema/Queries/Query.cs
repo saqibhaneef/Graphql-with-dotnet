@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using GraphQLDemo.API.Models;
 
 namespace PizzaOrder.API.Schema.Queries
 {    
