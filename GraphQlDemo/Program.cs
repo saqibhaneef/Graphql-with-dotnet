@@ -1,4 +1,6 @@
 
+using GraphQLDemo.API.Schema.Subscriptions;
+using HotChocolate.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using PizzaOrder.API.Schema.Mutations;
 using PizzaOrder.API.Schema.Queries;
@@ -12,8 +14,9 @@ builder.Services.AddControllers();
 
 builder.Services.AddGraphQLServer()
     .AddQueryType<Query>()
-    .AddMutationType<Mutation>();
-
+    .AddMutationType<Mutation>()
+    .AddSubscriptionType<Subscription>()
+    .AddInMemorySubscriptions();
 
 var app = builder.Build();
 
@@ -24,6 +27,10 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseRouting();
+
+app.UseWebSockets();
 
 app.MapGraphQL();
 

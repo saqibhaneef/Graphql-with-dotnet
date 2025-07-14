@@ -1,4 +1,7 @@
-﻿using PizzaOrder.API.Schema.Queries;
+﻿using GraphQLDemo.API.Schema.Subscriptions;
+using HotChocolate.Subscriptions;
+using PizzaOrder.API.Schema.Queries;
+using System.Threading.Tasks;
 
 namespace PizzaOrder.API.Schema.Mutations
 {
@@ -11,9 +14,9 @@ namespace PizzaOrder.API.Schema.Mutations
             _course = new List<CourseResult>();
         }
 
-        public CourseResult CreateCourse(CourseInputType courseInputType)
+        public CourseResult CreateCourse(CourseInputType courseInputType, [Service] ITopicEventSender topicEventSender)
         {
-            CourseResult courseType = new CourseResult()
+            CourseResult course = new CourseResult()
             {
                 Id = Guid.NewGuid(),
                 Name = courseInputType.Name,
@@ -21,12 +24,13 @@ namespace PizzaOrder.API.Schema.Mutations
                 InstructorId = courseInputType.InstructorId
             };
 
-            _course.Add(courseType);
+            _course.Add(course);
+            topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
 
-            return courseType;
+            return course;
         }
 
-        public CourseResult UpdateCourse(Guid id, CourseInputType courseInputType)
+        public async Task<CourseResult> UpdateCourse(Guid id, CourseInputType courseInputType, [Service] ITopicEventSender topicEventSender)
         {
             CourseResult course = _course.Where(x=>x.Id == id).FirstOrDefault();
 
@@ -38,6 +42,9 @@ namespace PizzaOrder.API.Schema.Mutations
             course.Name = courseInputType.Name;
             course.Subject = courseInputType.Subject;
             course.InstructorId = courseInputType.InstructorId;
+
+            string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
+            await topicEventSender.SendAsync(updateCourseTopic, course);
 
             return course;
         }
