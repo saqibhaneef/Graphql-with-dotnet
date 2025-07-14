@@ -1,16 +1,19 @@
 
-using System;
 using Microsoft.EntityFrameworkCore;
-using PizzaOrder.Data;
+using PizzaOrder.API.Schema.Mutations;
+using PizzaOrder.API.Schema.Queries;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<PizzaDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddControllers();
+
+builder.Services.AddGraphQLServer()
+    .AddQueryType<Query>()
+    .AddMutationType<Mutation>();
+
 
 var app = builder.Build();
 
