@@ -10,6 +10,8 @@ namespace GraphQLDemo.API.DTOs
 
         public Subject Subject { get; set; }
 
+        public Guid InstructorId { get; set; }
+
         [GraphQLNonNullType]
         public InstructorDTO Instructor { get; set; }
 

@@ -1,34 +1,17 @@
 ﻿using Bogus;
 using GraphQLDemo.API.Models;
+using GraphQLDemo.API.Services.Course;
+using System.Threading.Tasks;
 
 namespace PizzaOrder.API.Schema.Queries
 {    
     public class Query
     {
-        private readonly Faker<InstructorType> _instructorFaker;
-        private readonly Faker<StudentType> _studentFaker;
-        private readonly Faker<CourseType> _courseFaker;
-        public Query()
-        {
-            _instructorFaker = new Faker<InstructorType>()
-                .RuleFor(c => c.Id, f => Guid.NewGuid())
-                .RuleFor(c => c.FirstName, f => f.Name.FirstName())
-                .RuleFor(c => c.LastName, f => f.Name.LastName())
-                .RuleFor(c => c.Salary, f => f.Random.Double(0, 100000));
-
-            _studentFaker = new Faker<StudentType>()
-                .RuleFor(c => c.Id, f => Guid.NewGuid())
-                .RuleFor(c => c.FirstName, f => f.Name.FirstName())
-                .RuleFor(c => c.LastName, f => f.Name.LastName())
-                .RuleFor(c => c.GPA, f => f.Random.Double(1, 4));
-
-
-            _courseFaker = new Faker<CourseType>()
-                .RuleFor(c => c.Id, f => Guid.NewGuid())
-                .RuleFor(c => c.Name, f => f.Name.JobTitle())
-                .RuleFor(c => c.Subject, f => f.PickRandom<Subject>())
-                .RuleFor(c => c.Instructor, f => _instructorFaker)
-                .RuleFor(c => c.Students, f => _studentFaker.Generate(3));
+        private readonly CourseRepository _courseRepository;
+        
+        public Query(CourseRepository courseRepository)
+        {           
+            _courseRepository = courseRepository;
         }
 
 
@@ -36,19 +19,43 @@ namespace PizzaOrder.API.Schema.Queries
         public string Instructions => "This is the query instruction";
 
 
-        public IEnumerable<CourseType> GetCourses()
+        public async Task<IEnumerable<CourseType>> GetCourses()
         {            
-            var courses = _courseFaker.Generate(5);
+            var courses = await _courseRepository.GetAll();
 
-            return courses;           
+            return courses.Select(x=> new CourseType()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Subject = x.Subject,
+                Instructor = new InstructorType()
+                {
+                    Id=x.Instructor.Id,
+                    FirstName = x.Instructor.FirstName,
+                    LastName = x.Instructor.LastName,
+                    Salary = x.Instructor.Salary,
+                },
+            });           
         }
 
-        public CourseType GetCourseById(Guid id)
+        public async Task<CourseType> GetCourseById(Guid id)
         {
-            CourseType course = _courseFaker.Generate();
-            course.Id = id;
+            var course = await _courseRepository.GetById(id);
 
-            return course;
+            return new CourseType()
+            {
+                Id = course.Id,
+                Name = course.Name,
+                Subject = course.Subject,
+                Instructor = new InstructorType()
+                {
+                    Id = course.Instructor.Id,
+                    FirstName = course.Instructor.FirstName,
+                    LastName = course.Instructor.LastName,
+                    Salary = course.Instructor.Salary,
+                },
+            };
+
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using GraphQLDemo.API.Schema.Subscriptions;
+﻿using GraphQLDemo.API.DTOs;
+using GraphQLDemo.API.Schema.Subscriptions;
+using GraphQLDemo.API.Services.Course;
 using HotChocolate.Subscriptions;
 using PizzaOrder.API.Schema.Queries;
 using System.Threading.Tasks;
@@ -7,24 +9,31 @@ namespace PizzaOrder.API.Schema.Mutations
 {
     public class Mutation
     {
-        private readonly List<CourseResult> _course;
-
-        public Mutation()
+        private readonly CourseRepository _courseRepository;
+        public Mutation(CourseRepository courseRepository)
         {
-            _course = new List<CourseResult>();
+            _courseRepository = courseRepository;
         }
 
-        public CourseResult CreateCourse(CourseInputType courseInputType, [Service] ITopicEventSender topicEventSender)
+        public async Task<CourseResult> CreateCourse(CourseInputType courseInputType, [Service] ITopicEventSender topicEventSender)
         {
+            CourseDTO courseDTO = new CourseDTO()
+            {
+                Name = courseInputType.Name,
+                Subject = courseInputType.Subject,
+                InstructorId = courseInputType.InstructorId
+            };
+            
+            courseDTO = await _courseRepository.Create(courseDTO);
+
             CourseResult course = new CourseResult()
             {
-                Id = Guid.NewGuid(),
+                Id = courseDTO.Id,
                 Name = courseInputType.Name,
                 Subject = courseInputType.Subject,
                 InstructorId = courseInputType.InstructorId
             };
 
-            _course.Add(course);
             topicEventSender.SendAsync(nameof(Subscription.CourseCreated), course);
 
             return course;
@@ -32,16 +41,30 @@ namespace PizzaOrder.API.Schema.Mutations
 
         public async Task<CourseResult> UpdateCourse(Guid id, CourseInputType courseInputType, [Service] ITopicEventSender topicEventSender)
         {
-            CourseResult course = _course.Where(x=>x.Id == id).FirstOrDefault();
+            //CourseResult course = _course.Where(x=>x.Id == id).FirstOrDefault();
 
-            if(course is null)
+            //if(course is null)
+            //{
+            //    throw new GraphQLException(new Error("Course not found", "COURSE_NOT_FOUND"));
+            //}
+
+            CourseDTO courseDTO = new CourseDTO()
             {
-                throw new GraphQLException(new Error("Course not found", "COURSE_NOT_FOUND"));
-            }
+                Id = id,
+                Name = courseInputType.Name,
+                Subject = courseInputType.Subject,
+                InstructorId = courseInputType.InstructorId
+            };
 
-            course.Name = courseInputType.Name;
-            course.Subject = courseInputType.Subject;
-            course.InstructorId = courseInputType.InstructorId;
+            courseDTO = await _courseRepository.Update(courseDTO);
+
+            CourseResult course = new CourseResult()
+            {
+                Id = courseDTO.Id,
+                Name = courseInputType.Name,
+                Subject = courseInputType.Subject,
+                InstructorId = courseInputType.InstructorId
+            };
 
             string updateCourseTopic = $"{course.Id}_{nameof(Subscription.CourseUpdated)}";
             await topicEventSender.SendAsync(updateCourseTopic, course);
@@ -49,9 +72,9 @@ namespace PizzaOrder.API.Schema.Mutations
             return course;
         }
 
-        public bool DeleteCourse(Guid id)
+        public async Task<bool> DeleteCourse(Guid id)
         {
-            return _course.RemoveAll(x => x.Id == id) >= 1;
+            return await _courseRepository.Delete(id);
         }
     }
 }
