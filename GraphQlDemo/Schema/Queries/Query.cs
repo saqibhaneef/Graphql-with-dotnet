@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using GraphQLDemo.API.Models;
 using GraphQLDemo.API.Schema.Filters;
+using GraphQLDemo.API.Schema.Sorters;
 using GraphQLDemo.API.Services.Course;
 using System.Threading.Tasks;
 
@@ -18,7 +19,7 @@ namespace PizzaOrder.API.Schema.Queries
         [GraphQLDeprecated("This query us depricated.")]
         public string Instructions => "This is the query instruction";
 
-
+        [UseSorting(typeof(CourseSortType))]// Sorting is applied after db results
         public async Task<IEnumerable<CourseType>> GetCourses()
         {            
             var courses = await _courseRepository.GetAll();
@@ -34,6 +35,7 @@ namespace PizzaOrder.API.Schema.Queries
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 2)]
         [UseFiltering(typeof(CourseFilterType))]
+        [UseSorting]// Sorting is applying on db directly with query
         public IQueryable<CourseType> GetPaginatedCourses()
         {
             var courses = _courseRepository.GetAllQuerable();

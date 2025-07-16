@@ -24,7 +24,8 @@ builder.Services.AddGraphQLServer()
     .AddDataLoader<InstructorDataLoader>()
     .AddInMemorySubscriptions()
     .AddProjections()
-    .AddFiltering();
+    .AddFiltering()
+    .AddSorting();
 
 builder.Services.AddScoped<CourseRepository>();
 builder.Services.AddScoped<InstructorRepository>();
