@@ -12,6 +12,7 @@ namespace PizzaOrder.API.Schema.Queries
 
         public Subject Subject { get; set; }
 
+        [IsProjected(true)]
         public Guid InstructorId { get; set; }
         
         [GraphQLNonNullType]

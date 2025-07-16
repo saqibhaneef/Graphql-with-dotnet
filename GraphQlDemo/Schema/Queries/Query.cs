@@ -34,6 +34,7 @@ namespace PizzaOrder.API.Schema.Queries
         }
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 2)]
+        [UseProjection] 
         [UseFiltering(typeof(CourseFilterType))]
         [UseSorting]// Sorting is applying on db directly with query
         public IQueryable<CourseType> GetPaginatedCourses()
@@ -44,7 +45,7 @@ namespace PizzaOrder.API.Schema.Queries
             {
                 Id = x.Id,
                 InstructorId= x.InstructorId,
-                Name= x.Name,
+                Name= x.Name,  
                 Subject = x.Subject,
             });            
         }
