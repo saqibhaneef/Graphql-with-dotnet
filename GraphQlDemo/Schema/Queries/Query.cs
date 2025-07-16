@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using GraphQLDemo.API.Models;
+using GraphQLDemo.API.Schema.Filters;
 using GraphQLDemo.API.Services.Course;
 using System.Threading.Tasks;
 
@@ -32,6 +33,7 @@ namespace PizzaOrder.API.Schema.Queries
         }
 
         [UsePaging(IncludeTotalCount = true, DefaultPageSize = 2)]
+        [UseFiltering(typeof(CourseFilterType))]
         public IQueryable<CourseType> GetPaginatedCourses()
         {
             var courses = _courseRepository.GetAllQuerable();
