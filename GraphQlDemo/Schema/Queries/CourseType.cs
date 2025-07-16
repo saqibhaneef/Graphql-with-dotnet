@@ -1,4 +1,5 @@
 ﻿using GraphQLDemo.API.Models;
+using GraphQLDemo.API.Models.DataLoader;
 using GraphQLDemo.API.Services.Instructor;
 
 namespace PizzaOrder.API.Schema.Queries
@@ -14,9 +15,10 @@ namespace PizzaOrder.API.Schema.Queries
         public Guid InstructorId { get; set; }
         
         [GraphQLNonNullType]
-        public async Task<InstructorType> Instructor([Service] InstructorRepository instructorRepository)
+        public async Task<InstructorType> Instructor([Service] InstructorDataLoader instructorDataLoader)
         {
-            var instructor = await instructorRepository.GetById(InstructorId);
+            var instructor = await instructorDataLoader.LoadAsync(InstructorId, CancellationToken.None);
+            
             return new InstructorType(){
                 Id = instructor.Id,
                 FirstName = instructor.FirstName,

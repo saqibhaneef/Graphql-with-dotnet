@@ -1,6 +1,7 @@
 
 using Bogus.DataSets;
 using GraphQLDemo.API;
+using GraphQLDemo.API.Models.DataLoader;
 using GraphQLDemo.API.Schema.Subscriptions;
 using GraphQLDemo.API.Services.Course;
 using GraphQLDemo.API.Services.Instructor;
@@ -20,10 +21,13 @@ builder.Services.AddGraphQLServer()
     .AddQueryType<Query>()
     .AddMutationType<Mutation>()
     .AddSubscriptionType<Subscription>()
-    .AddInMemorySubscriptions();
+    .AddDataLoader<InstructorDataLoader>()
+    .AddInMemorySubscriptions()
+    .AddProjections();
 
 builder.Services.AddScoped<CourseRepository>();
 builder.Services.AddScoped<InstructorRepository>();
+////builder.Services.AddScoped<InstructorDataLoader>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddPooledDbContextFactory<SchoolDbContext>(x => x.UseSqlite(connectionString));
