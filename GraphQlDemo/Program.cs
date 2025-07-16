@@ -3,6 +3,7 @@ using Bogus.DataSets;
 using GraphQLDemo.API;
 using GraphQLDemo.API.Schema.Subscriptions;
 using GraphQLDemo.API.Services.Course;
+using GraphQLDemo.API.Services.Instructor;
 using HotChocolate.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using PizzaOrder.API.Schema.Mutations;
@@ -22,6 +23,7 @@ builder.Services.AddGraphQLServer()
     .AddInMemorySubscriptions();
 
 builder.Services.AddScoped<CourseRepository>();
+builder.Services.AddScoped<InstructorRepository>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddPooledDbContextFactory<SchoolDbContext>(x => x.UseSqlite(connectionString));

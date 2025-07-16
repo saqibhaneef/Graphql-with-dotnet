@@ -1,74 +1,70 @@
 ﻿using GraphQLDemo.API.DTOs;
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphQLDemo.API.Services.Course
+namespace GraphQLDemo.API.Services.Instructor
 {
-    public class CourseRepository
+    public class InstructorRepository
     {
         private readonly IDbContextFactory<SchoolDbContext> _contextFactory;
 
-        public CourseRepository(IDbContextFactory<SchoolDbContext> dbContextFactory)
+        public InstructorRepository(IDbContextFactory<SchoolDbContext> dbContextFactory)
         {
             _contextFactory = dbContextFactory;
         }
 
-        public async Task<IEnumerable<CourseDTO>> GetAll()
+        public async Task<IEnumerable<InstructorDTO>> GetAll()
         {
             using (SchoolDbContext context = _contextFactory.CreateDbContext())
             {
-                return await context.Courses
-                    //.Include(x=> x.Instructor)
-                    //.Include(x=>x.Students)
+                return await context.Instructors                    
                     .ToListAsync();
             }
 
         }
 
-        public async Task<CourseDTO> GetById(Guid courseId)
+        public async Task<InstructorDTO> GetById(Guid courseId)
         {
             using (SchoolDbContext context = _contextFactory.CreateDbContext())
             {
-                return await context.Courses
-                    //.Include(x => x.Instructor)
-                    //.Include(x => x.Students)
-                    .FirstOrDefaultAsync(x=>x.Id == courseId);
+                return await context.Instructors
+                    .FirstOrDefaultAsync(x => x.Id == courseId);
             }
 
         }
 
-        public async Task<CourseDTO> Create(CourseDTO course)
-        {
-            using(SchoolDbContext context = _contextFactory.CreateDbContext())
-            {
-                context.Courses.Add(course);
-                await context.SaveChangesAsync();
-            }
-
-            return course;
-        }
-
-
-        public async Task<CourseDTO> Update(CourseDTO course)
+        public async Task<InstructorDTO> Create(InstructorDTO instructor)
         {
             using (SchoolDbContext context = _contextFactory.CreateDbContext())
             {
-                context.Courses.Update(course);
+                context.Instructors.Add(instructor);
                 await context.SaveChangesAsync();
             }
 
-            return course;
+            return instructor;
+        }
+
+
+        public async Task<InstructorDTO> Update(InstructorDTO instructor)
+        {
+            using (SchoolDbContext context = _contextFactory.CreateDbContext())
+            {
+                context.Instructors.Update(instructor);
+                await context.SaveChangesAsync();
+            }
+
+            return instructor;
         }
 
         public async Task<bool> Delete(Guid id)
         {
             using (SchoolDbContext context = _contextFactory.CreateDbContext())
             {
-                CourseDTO course = new CourseDTO()
+                InstructorDTO instructor = new InstructorDTO()
                 {
                     Id = id
                 };
 
-                context.Courses.Remove(course);
+                context.Instructors.Remove(instructor);
                 return await context.SaveChangesAsync() > 0;
             }
 
