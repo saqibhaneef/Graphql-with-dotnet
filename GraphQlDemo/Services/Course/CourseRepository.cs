@@ -24,6 +24,16 @@ namespace GraphQLDemo.API.Services.Course
 
         }
 
+        public IQueryable<CourseDTO> GetAllQuerable()
+        {
+            var context = _contextFactory.CreateDbContext();
+                return context.Courses
+                    //.Include(x=> x.Instructor)
+                    //.Include(x=>x.Students)
+                    .AsQueryable();
+
+        }
+
         public async Task<CourseDTO> GetById(Guid courseId)
         {
             using (SchoolDbContext context = _contextFactory.CreateDbContext())

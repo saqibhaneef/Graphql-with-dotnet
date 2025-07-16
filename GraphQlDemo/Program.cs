@@ -30,7 +30,7 @@ builder.Services.AddScoped<InstructorRepository>();
 ////builder.Services.AddScoped<InstructorDataLoader>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddPooledDbContextFactory<SchoolDbContext>(x => x.UseSqlite(connectionString));
+builder.Services.AddPooledDbContextFactory<SchoolDbContext>(x => x.UseSqlite(connectionString).LogTo(Console.WriteLine));
 
 var app = builder.Build();
 

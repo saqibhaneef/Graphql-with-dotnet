@@ -8,7 +8,6 @@ namespace PizzaOrder.API.Schema.Queries
     public class Query
     {
         private readonly CourseRepository _courseRepository;
-        
         public Query(CourseRepository courseRepository)
         {           
             _courseRepository = courseRepository;
@@ -30,6 +29,20 @@ namespace PizzaOrder.API.Schema.Queries
                 Subject = x.Subject,
                 InstructorId = x.InstructorId,               
             });           
+        }
+
+        [UsePaging(IncludeTotalCount = true, DefaultPageSize = 2)]
+        public IQueryable<CourseType> GetPaginatedCourses()
+        {
+            var courses = _courseRepository.GetAllQuerable();
+
+            return courses.Select(x=> new CourseType()
+            {
+                Id = x.Id,
+                InstructorId= x.InstructorId,
+                Name= x.Name,
+                Subject = x.Subject,
+            });            
         }
 
         public async Task<CourseType> GetCourseById(Guid id)
